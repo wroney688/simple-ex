@@ -1,0 +1,42 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  generateName: "ms-demo-"
+  labels:
+    name: ms-demo
+    version: v1.0.0
+  namespace: ms-demo-perf
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: ms-demo
+        version: v1.0.0
+    spec:
+      containers:
+      - name: ms-demo
+        image: docker.io/wroney/ms-demo:v1.0.0
+        ports:
+        - name: ms-demo
+          containerPort: 80
+      nodeSelector:
+        beta.kubernetes.io/os: linux
+---
+apiVersion: v1
+kind: Service
+metadata:
+  generateName: "ms-demo-"
+  labels:
+    name: ms-demo
+    version: v1.0.0
+  namespace: ms-demo-perf
+spec:
+  type: LoadBalancer
+  ports:
+    # the port that this service should serve on
+  - port: 80
+    targetPort: 80
+  selector:
+    name: ms-demo
+    version: v1.0.0
