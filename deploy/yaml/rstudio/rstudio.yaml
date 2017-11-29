@@ -1,0 +1,45 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: rstudio
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: rstudio
+  labels:
+    name: rstudio
+  namespace: rstudio
+
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: rstudio
+    spec:
+      containers:
+      - name: rstudio
+        image: rocker/verse:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: rstudio
+          containerPort: 8787
+      nodeSelector:
+        beta.kubernetes.io/os: linux
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rstudio
+  labels:
+    name: rstudio
+  namespace: rstudio
+spec:
+  type: LoadBalancer
+  ports:
+    # the port that this service should serve on
+  - port: 80
+    targetPort: 8787
+  selector:
+    name: rstudio
